@@ -1,3 +1,5 @@
 C001,Dodi,18,Kecelakaan Mobil,Toko Kue,2011,R001
 C002,Anto,21,Jatuh Dari Jembatan,Apartemen,2018,R001
 C003,Aseng,32,Jatuh Cinta,Taman,2020,R003
+C004,Coki,10,Covid19,Kuburan,Rooftop,R002
+C005,Ciko,20,Covid, 19,Taman,R003
