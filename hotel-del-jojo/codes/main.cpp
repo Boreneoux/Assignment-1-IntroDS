@@ -3,10 +3,9 @@
 #include <string>
 #include <sstream>
 #include <ctype.h>
+// #include "customer.h"
 
 using namespace std;
-
-// #include "customer.h"
 
 struct Room
 {
@@ -27,8 +26,9 @@ struct Customer
 
 int lengthCust = 0, lengthRoom = 0;
 Customer C[100];
-// Customer *C = new Customer();
-void import_data_from_file(Customer *C)
+Room r[4];
+
+void import_data_from_file(Customer *C, Room *r)
 {
 
     ifstream dataCustomer("../customer/customer_data.txt");
@@ -50,7 +50,8 @@ void import_data_from_file(Customer *C)
         getline(ss, C->customer_cause_of_death[i], ',');
         getline(ss, C->customer_resting_place[i], ',');
         getline(ss, temp2, ',');
-        C->customer_died_year[i] = stoi(temp1);
+        C->customer_died_year[i] = stoi(temp2);
+        getline(ss, C->r.room_type_id[i], ',');
         ++i;
         ++lengthCust;
     }
@@ -64,10 +65,10 @@ void import_data_from_file(Customer *C)
     while (getline(dataRoom, line))
     {
         istringstream ss(line);
-        getline(ss, C->r.room_type_id[x], ',');
-        getline(ss, C->r.room_type_name[x], ',');
+        getline(ss, r->room_type_id[x], ',');
+        getline(ss, r->room_type_name[x], ',');
         getline(ss, temp1, ',');
-        C->r.room_type_price[x] = stoi(temp1);
+        r->room_type_price[x] = stoi(temp1);
 
         ++x;
         ++lengthRoom;
@@ -79,37 +80,95 @@ void import_data_from_file(Customer *C)
 
 void read(Customer *C)
 {
-
+    cin.ignore();
     cout << "|   | ID   |  Name |  Age  |  Room  |" << endl;
     cout << "|---|------|-------|-------|--------|" << endl;
     for (int i = 0; i < lengthCust; i++)
     {
+        C->customer_name[i][0] = toupper(C->customer_name[i][0]);
         cout << "| " << i + 1 << " |  " << C->customer_id[i] << "| " << C->customer_name[i] << " |   " << C->customer_age[i] << "   |  " << C->r.room_type_id[i] << "  |" << endl;
     }
+}
+
+void update(Customer *C)
+{
+
+    string ID;
+    char room_type_name[255];
+
+    cin.ignore();
+    cout << "Enter ID: ";
+    getline(cin, ID);
+
+    for (int i = 0; i <= lengthCust; i++)
+    {
+        if (ID == C->customer_id[i])
+        {
+            do
+            {
+                cout << "Room Type (Pantai, Rooftop, Taman, Bar): ";
+                cin >> room_type_name;
+            } while (room_type_name != r->room_type_name[0] && room_type_name != r->room_type_name[1] && room_type_name != r->room_type_name[2] && room_type_name != r->room_type_name[3]);
+            C->r.room_type_name[i] = room_type_name;
+            if (room_type_name == r->room_type_name[0])
+            {
+                C->r.room_type_id[i] = r->room_type_id[0];
+            }
+            else if (room_type_name == r->room_type_name[1])
+            {
+                C->r.room_type_id[i] = r->room_type_id[1];
+            }
+            else if (room_type_name == r->room_type_name[2])
+            {
+                C->r.room_type_id[i] = r->room_type_id[2];
+            }
+            else if (room_type_name == r->room_type_name[3])
+            {
+                C->r.room_type_id[i] = r->room_type_id[3];
+            }
+        }
+    }
+    ofstream dataCustomer;
+    dataCustomer.open("../customer/customer_data.txt", ios::trunc);
+    for (int i = 0; i <= lengthCust - 1; i++)
+    {
+        dataCustomer << C->customer_id[i] << ",";
+        dataCustomer << C->customer_name[i] << ",";
+        dataCustomer << C->customer_age[i] << ",";
+        dataCustomer << C->customer_cause_of_death[i] << ",";
+        dataCustomer << C->customer_resting_place[i] << ",";
+        dataCustomer << C->customer_died_year[i] << ",";
+        dataCustomer << C->r.room_type_id[i] << "\n";
+    }
+    dataCustomer.close();
 }
 
 void create(Customer *C)
 {
 
     ofstream dataCustomer;
-
+    char namaCustomer[255];
+    int umurCustomer;
     string cause_of_death[255];
     string resting_place[255];
-    char room_type_name[255];
-    string a = "Pantai";
-    string b = "Rooftop";
-    string c = "Taman";
-    string d = "Bar";
+    char room_type_name[10];
+    int i = 0;
 
     dataCustomer.open("../customer/customer_data.txt", ios::app);
 
     cout << "Customer ID : ";
     cin >> C->customer_id[lengthCust];
     dataCustomer << C->customer_id[lengthCust] << ",";
-    cout << "Name (lowercase letters): ";
-    cin >> namaCustomer;
+    cin.ignore();
+    do
+    {
+        cout << "Name (lowercase letters): ";
+        cin >> namaCustomer;
+    } while (namaCustomer[i] != tolower(namaCustomer[i]));
+
     C->customer_name[lengthCust] = namaCustomer;
     dataCustomer << C->customer_name[lengthCust] << ",";
+
     do
     {
         cout << "Age (0 - 100) : ";
@@ -123,6 +182,7 @@ void create(Customer *C)
     cin >> C->customer_cause_of_death[lengthCust];
     dataCustomer << C->customer_cause_of_death[lengthCust] << ",";
 
+    cin.ignore();
     cout << "Resting Place (max 255 letters): ";
     getline(cin, C->customer_resting_place[lengthCust]);
     dataCustomer << C->customer_resting_place[lengthCust] << ",";
@@ -131,25 +191,27 @@ void create(Customer *C)
     {
         cout << "Room Type (Pantai, Rooftop, Taman, Bar): ";
         cin >> room_type_name;
-    } while (room_type_name != a && room_type_name != b && room_type_name != c && room_type_name != d);
+    } while (room_type_name != r->room_type_name[0] && room_type_name != r->room_type_name[1] && room_type_name != r->room_type_name[2] && room_type_name != r->room_type_name[3]);
     C->r.room_type_name[lengthCust] = room_type_name;
-    dataCustomer << C->r.room_type_name[lengthCust] << ",";
 
-    if (room_type_name == a)
+    C->customer_died_year[lengthCust] = 0;
+    dataCustomer << C->customer_died_year[lengthCust] << ",";
+
+    if (room_type_name == r->room_type_name[0])
     {
-        C->r.room_type_id[lengthCust] = "R001";
+        C->r.room_type_id[lengthCust] = r->room_type_id[0];
     }
-    else if (room_type_name == b)
+    else if (room_type_name == r->room_type_name[1])
     {
-        C->r.room_type_id[lengthCust] = "R002";
+        C->r.room_type_id[lengthCust] = r->room_type_id[1];
     }
-    else if (room_type_name == c)
+    else if (room_type_name == r->room_type_name[2])
     {
-        C->r.room_type_id[lengthCust] = "R003";
+        C->r.room_type_id[lengthCust] = r->room_type_id[2];
     }
-    else if (room_type_name == d)
+    else if (room_type_name == r->room_type_name[3])
     {
-        C->r.room_type_id[lengthCust] = "R004";
+        C->r.room_type_id[lengthCust] = r->room_type_id[3];
     }
     dataCustomer << C->r.room_type_id[lengthCust] << "\n";
 
@@ -159,49 +221,52 @@ void create(Customer *C)
     cout << "Welcome to Hotel del Jojo!" << endl;
 }
 
-// void menu()
+// void remove(Customer *C)
 // {
-//     int choice;
-//     Customer C;
+//     string ID;
 
-//     do
+//     cin.ignore();
+//     cout << "Enter ID: ";
+//     getline(cin, ID);
+
+//     for (int i = 0; i <= lengthCust; i++)
 //     {
-//         cout << "Hotel del Jojo" << endl;
-//         cout << "1. Add New Customer" << endl;
-//         cout << "2. Read data" << endl;
-//         cout << "3. Update data" << endl;
-//         cout << "4. Remove data" << endl;
-//         cout << "5. Exit" << endl;
-
-//         cin >> choice;
-
-//         switch (choice)
+//         if (ID == C->customer_id[i])
 //         {
-//         case 1:
-
-//             break;
-
-//         case 2:
-//             read(C);
-//             break;
-
-//         case 3:
-
-//             break;
-
-//         case 4:
-
-//             break;
+//             do
+//             {
+//                 C->customer_id[i] = C->customer_id[i + 1];
+//                 C->customer_name[i] = C->customer_name[i + 1];
+//                 C->customer_age[i] = C->customer_age[i + 1];
+//                 C->customer_cause_of_death[i] = C->customer_cause_of_death[i + 1];
+//                 C->customer_resting_place[i] = C->customer_resting_place[i + 1];
+//                 C->customer_died_year[i] = C->customer_died_year[i + 1];
+//                 C->r.room_type_id[i] = C->r.room_type_id[i + 1];
+//                 C->r.room_type_name[i] = C->r.room_type_name[i + 1];
+//             } while (i <= lengthCust);
+//             --lengthCust;
 //         }
-//     } while (choice != 5);
+//     }
 
-//     cout << "Thanks" << endl;
+//     ofstream dataCustomer;
+//     dataCustomer.open("../customer/customer_data.txt", ios::trunc);
+//     for (int i = 0; i <= lengthCust - 1; i++)
+//     {
+//         dataCustomer << C->customer_id[i] << ",";
+//         dataCustomer << C->customer_name[i] << ",";
+//         dataCustomer << C->customer_age[i] << ",";
+//         dataCustomer << C->customer_cause_of_death[i] << ",";
+//         dataCustomer << C->customer_resting_place[i] << ",";
+//         dataCustomer << C->customer_died_year[i] << ",";
+//         dataCustomer << C->r.room_type_id[i] << "\n";
+//     }
+//     dataCustomer.close();
 // }
 
 int getOption()
 {
     int choice;
-
+    // system("clear");
     cout << "Hotel del Jojo" << endl;
     cout << "1. Add New Customer" << endl;
     cout << "2. Read data" << endl;
@@ -216,15 +281,7 @@ int getOption()
 
 int main()
 {
-    import_data_from_file(C);
-
-    // for (int i = 0; i < 4; i++)
-    // {
-    //     cout << " Data ke- " << i << " :" << endl;
-    //     cout << C->customer_age[i] << "," << C->customer_cause_of_death[i] << "," << C->customer_died_year[i] << "," << C->customer_id[i] << "," << C->customer_name[i] << "," << C->customer_resting_place[i] << endl;
-    // }
-
-    // Customer C;
+    import_data_from_file(C, r);
 
     int pilihan = getOption();
 
@@ -240,18 +297,18 @@ int main()
             read(C);
             break;
         case 3:
+            update(C);
             break;
         case 4:
             break;
         default:
             cout << "Pilihan tak tersedia!" << endl;
+            break;
         }
         pilihan = getOption();
     }
 
     cout << "Thank you" << endl;
-
-    // menu();
 
     return 0;
 }
