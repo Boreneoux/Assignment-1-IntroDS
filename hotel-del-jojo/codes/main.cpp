@@ -96,6 +96,7 @@ void update(Customer *C)
     string ID;
     char room_type_name[255];
 
+    cout << "Press any key to continue...";
     cin.ignore();
     cout << "Enter ID: ";
     getline(cin, ID);
@@ -219,96 +220,100 @@ void create(Customer *C)
     dataCustomer.close();
 
     cout << "Welcome to Hotel del Jojo!" << endl;
+    cin.ignore();
 }
 
-// void remove(Customer *C)
-// {
-//     string ID;
+void remove(Customer *C)
+{
+    string ID;
 
-//     cin.ignore();
-//     cout << "Enter ID: ";
-//     getline(cin, ID);
+    cin.ignore();
+    cout << "Enter ID: ";
+    getline(cin, ID);
 
-//     for (int i = 0; i <= lengthCust; i++)
-//     {
-//         if (ID == C->customer_id[i])
-//         {
-//             do
-//             {
-//                 C->customer_id[i] = C->customer_id[i + 1];
-//                 C->customer_name[i] = C->customer_name[i + 1];
-//                 C->customer_age[i] = C->customer_age[i + 1];
-//                 C->customer_cause_of_death[i] = C->customer_cause_of_death[i + 1];
-//                 C->customer_resting_place[i] = C->customer_resting_place[i + 1];
-//                 C->customer_died_year[i] = C->customer_died_year[i + 1];
-//                 C->r.room_type_id[i] = C->r.room_type_id[i + 1];
-//                 C->r.room_type_name[i] = C->r.room_type_name[i + 1];
-//             } while (i <= lengthCust);
-//             --lengthCust;
-//         }
-//     }
+    for (int i = 0; i <= lengthCust; i++)
+    {
+        if (ID == C->customer_id[i])
+        {
+            do
+            {
+                C->customer_id[i] = C->customer_id[i + 1];
+                C->customer_name[i] = C->customer_name[i + 1];
+                C->customer_age[i] = C->customer_age[i + 1];
+                C->customer_cause_of_death[i] = C->customer_cause_of_death[i + 1];
+                C->customer_resting_place[i] = C->customer_resting_place[i + 1];
+                C->customer_died_year[i] = C->customer_died_year[i + 1];
+                C->r.room_type_id[i] = C->r.room_type_id[i + 1];
+                C->r.room_type_name[i] = C->r.room_type_name[i + 1];
+            } while (i <= lengthCust);
+            --lengthCust;
+        }
+    }
 
-//     ofstream dataCustomer;
-//     dataCustomer.open("../customer/customer_data.txt", ios::trunc);
-//     for (int i = 0; i <= lengthCust - 1; i++)
-//     {
-//         dataCustomer << C->customer_id[i] << ",";
-//         dataCustomer << C->customer_name[i] << ",";
-//         dataCustomer << C->customer_age[i] << ",";
-//         dataCustomer << C->customer_cause_of_death[i] << ",";
-//         dataCustomer << C->customer_resting_place[i] << ",";
-//         dataCustomer << C->customer_died_year[i] << ",";
-//         dataCustomer << C->r.room_type_id[i] << "\n";
-//     }
-//     dataCustomer.close();
-// }
+    ofstream dataCustomer;
+    dataCustomer.open("../customer/customer_data.txt", ios::trunc);
+    for (int i = 0; i <= lengthCust - 1; i++)
+    {
+        dataCustomer << C->customer_id[i] << ",";
+        dataCustomer << C->customer_name[i] << ",";
+        dataCustomer << C->customer_age[i] << ",";
+        dataCustomer << C->customer_cause_of_death[i] << ",";
+        dataCustomer << C->customer_resting_place[i] << ",";
+        dataCustomer << C->customer_died_year[i] << ",";
+        dataCustomer << C->r.room_type_id[i] << "\n";
+    }
+    dataCustomer.close();
+}
 
-int getOption()
+void menu()
 {
     int choice;
-    // system("clear");
-    cout << "Hotel del Jojo" << endl;
-    cout << "1. Add New Customer" << endl;
-    cout << "2. Read data" << endl;
-    cout << "3. Update data" << endl;
-    cout << "4. Remove data" << endl;
-    cout << "5. Exit" << endl;
-    cout << "\nChoice [1-5] >> ";
-    cin >> choice;
+    do
+    {
+        system("clear");
+        cout << "Hotel del Jojo" << endl;
+        cout << "1. Add New Customer" << endl;
+        cout << "2. Read data" << endl;
+        cout << "3. Update data" << endl;
+        cout << "4. Remove data" << endl;
+        cout << "5. Exit" << endl;
+        cout << "\nChoice [1-5] >> ";
+        cin >> choice;
 
-    return choice;
+        switch (choice)
+        {
+        case 1:
+            system("clear");
+            create(C);
+            break;
+        case 2:
+            system("clear");
+            read(C);
+            break;
+        case 3:
+            system("clear");
+            read(C);
+            update(C);
+            break;
+        case 4:
+            system("clear");
+            read(C);
+            remove(C);
+            break;
+        default:
+            break;
+        }
+        cout << "Press any key to continue..." << endl;
+        cin.ignore();
+    } while (choice != 5);
+
+    cout << "Thank you" << endl;
 }
 
 int main()
 {
     import_data_from_file(C, r);
-
-    int pilihan = getOption();
-
-    while (pilihan != 5)
-    {
-
-        switch (pilihan)
-        {
-        case 1:
-            create(C);
-            break;
-        case 2:
-            read(C);
-            break;
-        case 3:
-            update(C);
-            break;
-        case 4:
-            break;
-        default:
-            cout << "Pilihan tak tersedia!" << endl;
-            break;
-        }
-        pilihan = getOption();
-    }
-
-    cout << "Thank you" << endl;
+    menu();
 
     return 0;
 }

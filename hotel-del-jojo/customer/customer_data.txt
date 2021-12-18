@@ -1,4 +1,4 @@
 C001,Dodi,18,Kecelakaan Mobil,Toko Kue,2011,R004
 C002,Anto,21,Jatuh Dari Jembatan,Apartemen,2018,R002
-C003,Aseng,32,Jatuh Cinta,Taman,2020,R003
-C004,Coki,27,Covid,Kuburan,0,R004
+C003,Aseng,32,Jatuh Cinta,Taman,2020,R004
+C004,Coki,30,Covid-19,Pantai,0,R001
